@@ -37,7 +37,7 @@ namespace TUTOR.Controllers
             _context.HistorialTips.Add(historial);
             _context.SaveChanges();
 
-            return Ok(historial);
+            return Ok(historial)
         }
     }
 }
