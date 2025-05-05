@@ -46,7 +46,21 @@ namespace TUTOR.Repository
 
         public async Task UpdateAsync(HistorialTip historialTip)
         {
-            _context.HistorialTips.Update(historialTip);
+            // Verificar si el objeto existe en la base de datos
+            var existingHistorialTip = await _context.HistorialTips
+                .FirstOrDefaultAsync(h => h.HistorialTipId == historialTip.HistorialTipId);
+
+            if (existingHistorialTip == null)
+            {
+                // Si no se encuentra, lanzar una excepción o manejarlo según prefieras
+                throw new KeyNotFoundException("HistorialTip no encontrado.");
+            }
+
+            // Si se encuentra, actualizar los campos
+            existingHistorialTip.UserId = historialTip.UserId; // O cualquier otro campo que desees actualizar
+            existingHistorialTip.TipId = historialTip.TipId;   // Actualiza todos los campos necesarios
+
+            _context.HistorialTips.Update(existingHistorialTip);
             await _context.SaveChangesAsync();
         }
 

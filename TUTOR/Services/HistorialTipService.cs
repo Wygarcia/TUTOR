@@ -1,57 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore;
-using TUTOR.Context;
-using TUTOR.Model;
+﻿using TUTOR.Model;
+using TUTOR.Repository;
 
-namespace TUTOR.Services
+public interface IHistorialTipService
 {
-    public interface IHistorialTipService
+    Task<IEnumerable<HistorialTip>> GetAllAsync();
+    Task<HistorialTip?> GetByIdAsync(int id);
+    Task AddAsync(HistorialTip historialTip);
+    Task UpdateAsync(HistorialTip historialTip);
+    Task DeleteAsync(HistorialTip historialTip);
+}
+
+public class HistorialTipService : IHistorialTipService
+{
+    private readonly IHistorialTipRepository _repository;
+
+    public HistorialTipService(IHistorialTipRepository repository)
     {
-        Task<IEnumerable<HistorialTip>> GetAllAsync();
-        Task<HistorialTip?> GetByIdAsync(int id);
-        Task<HistorialTip> CreateAsync(HistorialTip historial);
-        Task<bool> DeleteAsync(int id);
+        _repository = repository;
     }
 
-    public class HistorialTipService : IHistorialTipService
-    {
-        private readonly TutorDbContext _context;
+    public async Task<IEnumerable<HistorialTip>> GetAllAsync()
+        => await _repository.GetAllAsync();
 
-        public HistorialTipService(TutorDbContext context)
-        {
-            _context = context;
-        }
+    public async Task<HistorialTip?> GetByIdAsync(int id)
+        => await _repository.GetByIdAsync(id);
 
-        public async Task<IEnumerable<HistorialTip>> GetAllAsync()
-        {
-            return await _context.HistorialTips
-                .Include(h => h.User)
-                .Include(h => h.Tip)
-                .ToListAsync();
-        }
+    public async Task AddAsync(HistorialTip historialTip)
+        => await _repository.AddAsync(historialTip);
 
-        public async Task<HistorialTip?> GetByIdAsync(int id)
-        {
-            return await _context.HistorialTips
-                .Include(h => h.User)
-                .Include(h => h.Tip)
-                .FirstOrDefaultAsync(h => h.HistorialTipId == id);
-        }
+    public async Task UpdateAsync(HistorialTip historialTip)
+        => await _repository.UpdateAsync(historialTip);
 
-        public async Task<HistorialTip> CreateAsync(HistorialTip historial)
-        {
-            _context.HistorialTips.Add(historial);
-            await _context.SaveChangesAsync();
-            return historial;
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var historial = await _context.HistorialTips.FindAsync(id);
-            if (historial == null) return false;
-
-            _context.HistorialTips.Remove(historial);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-    }
+    public async Task DeleteAsync(HistorialTip historialTip)
+        => await _repository.DeleteAsync(historialTip);
 }

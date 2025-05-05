@@ -4,8 +4,8 @@ using TUTOR.Services;
 
 namespace TUTOR.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class HistorialTipController : ControllerBase
     {
         private readonly IHistorialTipService _historialTipService;
@@ -15,60 +15,62 @@ namespace TUTOR.Controllers
             _historialTipService = historialTipService;
         }
 
-        // GET: api/HistorialTip
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<HistorialTip>>> GetAllAsync()
         {
-            var historial = await _historialTipService.GetAllAsync();
-            return Ok(historial);
+            var historialTips = await _historialTipService.GetAllAsync();
+            return Ok(historialTips);
         }
 
-        // GET: api/HistorialTip/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<ActionResult<HistorialTip>> GetByIdAsync(int id)
         {
-            var historial = await _historialTipService.GetByIdAsync(id);
-            if (historial == null)
+            var historialTip = await _historialTipService.GetByIdAsync(id);
+            if (historialTip == null)
+            {
                 return NotFound();
-            return Ok(historial);
+            }
+            return Ok(historialTip);
         }
 
-        // POST: api/HistorialTip
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] HistorialTip historialTip)
+        public async Task<ActionResult<HistorialTip>> AddAsync(HistorialTip historialTip)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             await _historialTipService.AddAsync(historialTip);
-            return CreatedAtAction(nameof(GetById), new { id = historialTip.HistorialTipId }, historialTip);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = historialTip.HistorialTipId }, historialTip);
         }
 
-        // PUT: api/HistorialTip/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] HistorialTip historialTip)
+        public async Task<IActionResult> UpdateAsync(int id, HistorialTip historialTip)
         {
+            // Verificar si el id de la URL coincide con el id del objeto
             if (id != historialTip.HistorialTipId)
-                return BadRequest();
+            {
+                return BadRequest("El id de la URL no coincide con el id del objeto.");
+            }
 
-            var existing = await _historialTipService.GetByIdAsync(id);
-            if (existing == null)
-                return NotFound();
-
-            await _historialTipService.UpdateAsync(historialTip);
-            return NoContent();
+            try
+            {
+                await _historialTipService.UpdateAsync(historialTip);
+                return NoContent(); // Devuelve un 204 No Content si la actualización fue exitosa
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("El historial tip no fue encontrado.");
+            }
         }
 
-        // DELETE: api/HistorialTip/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            var historial = await _historialTipService.GetByIdAsync(id);
-            if (historial == null)
+            var historialTip = await _historialTipService.GetByIdAsync(id);
+            if (historialTip == null)
+            {
                 return NotFound();
+            }
 
-            await _historialTipService.DeleteAsync(historial);
-            return NoContent();
+            await _historialTipService.DeleteAsync(historialTip);
+            return NoContent(); // Devuelve un 204 No Content si la eliminación fue exitosa
         }
     }
 }
