@@ -16,7 +16,7 @@ public class TutorDbContextFactory : IDesignTimeDbContextFactory<TutorDbContext>
             .AddJsonFile("appsettings.json")
             .Build();
 
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = configuration.GetConnectionString("Connection");
         optionsBuilder.UseSqlServer(connectionString);
 
         return new TutorDbContext(optionsBuilder.Options);
