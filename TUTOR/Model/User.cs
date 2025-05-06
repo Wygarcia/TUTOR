@@ -19,3 +19,7 @@ public class User
     // Relaciones (opcional)
     public ICollection<HistorialTip>? HistorialTips { get; set; }
 }
+
+
+
+
