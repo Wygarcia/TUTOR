@@ -29,15 +29,15 @@ namespace TUTOR.Context
                 .HasKey(h => h.HistorialTipId);
 
             // Relaciones (si decides usarlas explícitamente)
-            modelBuilder.Entity<HistorialTip>()
-                .HasOne(h => h.User)
-                .WithMany(u => u.HistorialTips)
-                .HasForeignKey(h => h.UserId);
+            //modelBuilder.Entity<HistorialTip>()
+                //.HasOne(h => h.User)
+                //.WithMany(u => u.HistorialTips)
+                //.HasForeignKey(h => h.UserId);
 
-            modelBuilder.Entity<HistorialTip>()
-                .HasOne(h => h.Tip)
-                .WithMany(t => t.Historiales)
-                .HasForeignKey(h => h.TipId);
+            //modelBuilder.Entity<HistorialTip>()
+                //.HasOne(h => h.Tip)
+                //.WithMany(t => t.Historiales)
+                //.HasForeignKey(h => h.TipId);
         }
     }
 }
