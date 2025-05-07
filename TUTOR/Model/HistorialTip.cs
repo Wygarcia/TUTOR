@@ -5,8 +5,8 @@
         public int HistorialTipId { get; set; }
 
         // Claves foráneas
-        public int UserId { get; set; }
-        public User User { get; set; } = null!;
+        //public int UserId { get; set; }
+        //public User User { get; set; } = null!;
 
         public int TipId { get; set; }
         public Tip Tip { get; set; } = null!;

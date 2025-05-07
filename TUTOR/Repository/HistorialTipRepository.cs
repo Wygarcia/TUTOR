@@ -25,7 +25,7 @@ namespace TUTOR.Repository
         public async Task<IEnumerable<HistorialTip>> GetAllAsync()
         {
             return await _context.HistorialTips
-                .Include(h => h.User)
+                //.Include(h => h.User)
                 .Include(h => h.Tip)
                 .ToListAsync();
         }
@@ -33,7 +33,7 @@ namespace TUTOR.Repository
         public async Task<HistorialTip?> GetByIdAsync(int id)
         {
             return await _context.HistorialTips
-                .Include(h => h.User)
+                //.Include(h => h.User)
                 .Include(h => h.Tip)
                 .FirstOrDefaultAsync(h => h.HistorialTipId == id);
         }
@@ -57,8 +57,8 @@ namespace TUTOR.Repository
             }
 
             // Si se encuentra, actualizar los campos
-            existingHistorialTip.UserId = historialTip.UserId; // O cualquier otro campo que desees actualizar
-            existingHistorialTip.TipId = historialTip.TipId;   // Actualiza todos los campos necesarios
+            //existingHistorialTip.UserId = historialTip.UserId; // O cualquier otro campo que desees actualizar
+            //existingHistorialTip.TipId = historialTip.TipId;   // Actualiza todos los campos necesarios
 
             _context.HistorialTips.Update(existingHistorialTip);
             await _context.SaveChangesAsync();

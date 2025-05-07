@@ -17,7 +17,7 @@ public class User
     public required string ModifiedBy { get; set; }
 
     // Relaciones (opcional)
-    public ICollection<HistorialTip>? HistorialTips { get; set; }
+    //public ICollection<HistorialTip>? HistorialTips { get; set; }
 }
 
 
