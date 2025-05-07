@@ -1,43 +1,76 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TUTOR.Context;
 using TUTOR.Model;
-using Microsoft.EntityFrameworkCore;
+using TUTOR.Services;
 
 namespace TUTOR.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class HistorialTipController : ControllerBase
     {
-        private readonly TutorDbContext _context;
+        private readonly IHistorialTipService _historialTipService;
 
-        public HistorialTipController(TutorDbContext context)
+        public HistorialTipController(IHistorialTipService historialTipService)
         {
-            _context = context;
+            _historialTipService = historialTipService;
         }
 
         [HttpGet]
-        public IActionResult GetAllHistorial()
+        public async Task<ActionResult<IEnumerable<HistorialTip>>> GetAllAsync()
         {
-            var historial = _context.HistorialTips
-                .Include(h => h.User)
-                .Include(h => h.Tip)
-                .Where(h => !h.IsDeleted)
-                .ToList();
+            var historialTips = await _historialTipService.GetAllAsync();
+            return Ok(historialTips);
+        }
 
-            return Ok(historial);
+        [HttpGet("{id}")]
+        public async Task<ActionResult<HistorialTip>> GetByIdAsync(int id)
+        {
+            var historialTip = await _historialTipService.GetByIdAsync(id);
+            if (historialTip == null)
+            {
+                return NotFound();
+            }
+            return Ok(historialTip);
         }
 
         [HttpPost]
-        public IActionResult RegistrarHistorial([FromBody] HistorialTip historial)
+        public async Task<ActionResult<HistorialTip>> AddAsync(HistorialTip historialTip)
         {
-            historial.FechaVisto = DateTime.UtcNow;
-            historial.Modified = DateTime.UtcNow;
+            await _historialTipService.AddAsync(historialTip);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = historialTip.HistorialTipId }, historialTip);
+        }
 
-            _context.HistorialTips.Add(historial);
-            _context.SaveChanges();
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAsync(int id, HistorialTip historialTip)
+        {
+            // Verificar si el id de la URL coincide con el id del objeto
+            if (id != historialTip.HistorialTipId)
+            {
+                return BadRequest("El id de la URL no coincide con el id del objeto.");
+            }
 
-            return Ok(historial);
+            try
+            {
+                await _historialTipService.UpdateAsync(historialTip);
+                return NoContent(); // Devuelve un 204 No Content si la actualización fue exitosa
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("El historial tip no fue encontrado.");
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var historialTip = await _historialTipService.GetByIdAsync(id);
+            if (historialTip == null)
+            {
+                return NotFound();
+            }
+
+            await _historialTipService.DeleteAsync(historialTip);
+            return NoContent(); // Devuelve un 204 No Content si la eliminación fue exitosa
         }
     }
 }
